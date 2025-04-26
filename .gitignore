@@ -1,18 +1,24 @@
-# Dart / Flutter
+# Flutter & Dart
 .dart_tool/
+.packages
+.pub-cache/
+build/
 .flutter-plugins
 .flutter-plugins-dependencies
-.packages
-.buildlog/
-.idea/
-build/
-android/.gradle/
-ios/Pods/
-*.iml
-*.lock
-
-# Optional
-analysis_options.yaml
+generated_plugin_registrant.dart
 
 # VS Code
 .vscode/
+.idea/
+
+# Mac OS
+.DS_Store
+
+# Others
+*.iml
+*.lock
+*.sh
+*.log
+*.tmp
+
+.comments.txt
