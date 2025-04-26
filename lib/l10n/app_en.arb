@@ -1,0 +1,9 @@
+{
+  "app_title": "Crop Screenshot",
+  "status_active": "Status: Active",
+  "status_inactive": "Status: Inactive",
+  "trial_subscription": "Trial Subscription",
+  "paid_until": "Paid until",
+  "lifetime_subscription": "Lifetime Subscription",
+  "no_subscription": "No Subscription"
+}

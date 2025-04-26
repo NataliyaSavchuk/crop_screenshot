@@ -1,0 +1,18 @@
+# Dart / Flutter
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.buildlog/
+.idea/
+build/
+android/.gradle/
+ios/Pods/
+*.iml
+*.lock
+
+# Optional
+analysis_options.yaml
+
+# VS Code
+.vscode/
