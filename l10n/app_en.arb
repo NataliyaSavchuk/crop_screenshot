@@ -1,0 +1,9 @@
+{
+  "appTitle": "Screenshot Cropper",
+  "active": "Active",
+  "inactive": "Inactive",
+  "subscriptionStatus": "Subscription Status",
+  "noSubscription": "No Subscription",
+  "lifetime": "Lifetime",
+  "instruction": "To make a square screenshot, double-press the side button."
+}

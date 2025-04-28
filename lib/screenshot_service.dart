@@ -1,54 +1,31 @@
-import 'dart:typed_data';
-import 'dart:ui' as ui;
-import 'package:flutter/rendering.dart';
-import 'package:gal/gal.dart';
+import 'dart:io';
+import 'package:image/image.dart' as img;
+import 'package:gal/gal.dart'; // Подключаем библиотеку gal
 
 class ScreenshotService {
-  Future<Uint8List?> captureScreenshot() async {
-    try {
-      // Create a mock screenshot: text above a square image
-      final recorder = ui.PictureRecorder();
-      final canvas = Canvas(recorder);
+  static Future<void> handleScreenshot(File screenshot) async {
+    // Загружаем изображение
+    img.Image image = img.decodeImage(screenshot.readAsBytesSync())!;
 
-      const text = 'Sample Text';
-      final textStyle = ui.TextStyle(
-        fontSize: 20,
-        color: ui.Color(0xFF000000),
-      );
+    // Логика обрезки: по центру экрана, размер квадрата равен ширине экрана
+    int size = image.width; // Ширина экрана
+    int offsetY = (image.height - size) ~/ 2; // Центрируем по вертикали
 
-      final paragraph = ui.ParagraphBuilder(
-        ui.ParagraphStyle(),
-      )
-        ..pushStyle(textStyle)
-        ..addText(text);
+    // Обрезаем изображение
+    img.Image cropped = img.copyCrop(
+      image,
+      x: 0,
+      y: offsetY,
+      width: size,
+      height: size,
+    );
 
-      final paragraphBuilt = paragraph.build()
-        ..layout(const ui.ParagraphConstraints(width: 200));
+    // Сохраняем обрезанное изображение в файл
+    File croppedFile = File('/path/to/save/cropped_image.png');
+    await croppedFile.writeAsBytes(img.encodePng(cropped));
 
-      canvas.drawParagraph(paragraphBuilt, const Offset(0, 0));
-
-      canvas.drawRect(
-        const Rect.fromLTWH(0, 40, 200, 200),
-        Paint()..color = const ui.Color(0xFFDDDDDD),
-      );
-
-      final picture = recorder.endRecording();
-      final img = await picture.toImage(200, 240);
-      final byteData = await img.toByteData(format: ui.ImageByteFormat.png);
-      return byteData?.buffer.asUint8List();
-    } catch (e) {
-      print('Error capturing screenshot: $e');
-      return null;
-    }
-  }
-
-  Future<bool> saveToGallery(Uint8List imageBytes) async {
-    try {
-      await Gal.putImageBytes(imageBytes, album: 'SpecialScreenshots');
-      return true;
-    } catch (e) {
-      print('Error saving to gallery: $e');
-      return false;
-    }
+    // Сохраняем в галерею в папку "SquareShots"
+    await Gal.putImage(croppedFile.path, album: "SquareShots");
   }
 }
+

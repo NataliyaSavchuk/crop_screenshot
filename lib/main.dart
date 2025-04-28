@@ -1,126 +1,60 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'subscription.dart';
-import 'screenshot_service.dart';
+import 'dart:io';
+import 'lib/subscription_service.dart'; // Подключаем SubscriptionManager
+import 'lib/screenshot_service.dart';
 
 void main() {
-  runApp(const SpecialScreenshotApp());
+  runApp(MyApp());
 }
 
-class SpecialScreenshotApp extends StatelessWidget {
-  const SpecialScreenshotApp({super.key});
-
+class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Special Screenshot App',
-      theme: ThemeData(useMaterial3: true),
-      home: const HomeScreen(),
+      title: 'Screenshot Cropper',
+      theme: ThemeData(primarySwatch: Colors.blue),
+      home: HomePage(),
     );
   }
 }
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
-
+class HomePage extends StatefulWidget {
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  _HomePageState createState() => _HomePageState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
-  Subscription? _subscription;
-  bool _isLoading = true;
-  bool _showScreenshot = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadSubscription();
-  }
-
-  Future<void> _loadSubscription() async {
-    // Mock subscription: dated, valid for 30 days
-    await Subscription.saveSubscription(
-      SubscriptionType.dated,
-      endDate: DateTime.now().add(const Duration(days: 30)),
-    );
-    final subscription = await Subscription.loadSubscription();
-    setState(() {
-      _subscription = subscription;
-      _isLoading = false;
-    });
-  }
-
-  Future<void> _takeScreenshot() async {
-    if (_subscription?.isActive != true) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('App is inactive')),
-      );
-      return;
-    }
-
-    final service = ScreenshotService();
-    final image = await service.captureScreenshot();
-    if (image != null) {
-      setState(() {
-        _showScreenshot = true;
-      });
-      await Future.delayed(const Duration(seconds: 1));
-      setState(() {
-        _showScreenshot = false;
-      });
-      final saved = await service.saveToGallery(image);
-      if (saved) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Screenshot saved')),
-        );
-      }
-    }
-  }
+class _HomePageState extends State<HomePage> {
+  bool isActive = SubscriptionService.isActive();
+  String subscriptionStatus = SubscriptionService.getSubscriptionStatus();
 
   @override
   Widget build(BuildContext context) {
-    if (_isLoading) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
-    }
-
-    final subscriptionText = _subscription?.type == SubscriptionType.trial
-        ? 'Trial Subscription'
-        : _subscription?.type == SubscriptionType.dated
-            ? 'Subscription until ${DateFormat('dd.MM.yyyy').format(_subscription!.endDate!)}'
-            : _subscription?.type == SubscriptionType.lifetime
-                ? 'Lifetime Subscription'
-                : 'No Subscription';
-
     return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              'Status: ${_subscription?.isActive == true ? 'Active' : 'Inactive'}',
-              style: const TextStyle(fontSize: 24),
-            ),
-            Text(
-              'Subscription: $subscriptionText',
-              style: const TextStyle(fontSize: 20),
-            ),
-            if (_showScreenshot)
-              Container(
-                color: Colors.grey[200],
-                padding: const EdgeInsets.all(8),
-                child: const Text(
-                  'Mock Cropped Screenshot\nWith Text Above',
-                  textAlign: TextAlign.center,
-                ),
-              )
-            else
-              TextButton(
-                onPressed: _takeScreenshot,
-                child: const Text('Take Screenshot'),
-              ),
-          ],
-        ),
+      appBar: AppBar(title: Text("Screenshot Cropper")),
+      body: Column(
+        children: <Widget>[
+          Text(
+            "Status: ${isActive ? 'Active' : 'Inactive'}",
+            style: TextStyle(fontSize: 20),
+          ),
+          Text(
+            "Subscription: $subscriptionStatus",
+            style: TextStyle(fontSize: 20),
+          ),
+          SizedBox(height: 20),
+          Text(
+            "To make a square screenshot, double press the side button.",
+            style: TextStyle(fontSize: 16),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              // Временно для тестирования: захватываем скриншот и обрабатываем
+              File screenshot = File('/path/to/screenshot.png'); // Пример пути скриншота
+              await ScreenshotService.handleScreenshot(screenshot);
+            },
+            child: Text("Test Screenshot"),
+          ),
+        ],
       ),
     );
   }

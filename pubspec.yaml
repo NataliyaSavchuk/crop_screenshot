@@ -1,26 +1,17 @@
-name: crop_screenshot
-description: Crop and save special screenshots automatically.
+name: screenshot_cropper
+description: A simple app to crop screenshots after double-pressing the side button.
 publish_to: "none"
 
-version: 1.0.0+1
-
 environment:
-  sdk: ">=3.3.0 <4.0.0"
+  sdk: ">=3.0.0 <4.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
-  screenshot: ^1.3.0
-  intl: ^0.18.1
-  shared_preferences: ^2.2.2
-  path_provider: ^2.0.14
-  gal: ^2.3.1
-
-
-dev_dependencies:
-  flutter_test:
-    sdk: flutter
+  gal: ^1.3.0 # для работы с изображениями и сохранения в галерею
+  intl: ^0.18.0 # для мультиязычности
+  path_provider: ^2.0.15 # чтобы работать с временными файлами
+  image: ^4.0.17 # для обрезки скриншота
 
 flutter:
   uses-material-design: true
-
